@@ -1,0 +1,105 @@
+@import "tailwindcss";
+@source "./**/*.js";
+@font-face {
+  font-family: Manrope; font-style: normal; font-weight: 200 800; font-display: swap;
+  src: url('./fonts/manrope-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: Manrope; font-style: normal; font-weight: 200 800; font-display: swap;
+  src: url('./fonts/manrope-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
+}
+@font-face {
+  font-family: Manrope; font-style: normal; font-weight: 200 800; font-display: swap;
+  src: url('./fonts/manrope-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;
+}
+@theme {
+  --color-page: #080b0f;
+  --color-panel: #0c1117;
+  --color-card: #0e141c;
+  --color-line: #222b36;
+  --color-ink: #f1f4fa;
+  --color-muted: #a0adbf;
+  /* Change this one value to recolor the interface. */
+  --color-accent: #ff4545; /*#a855f7*/
+  --color-accent-hover: color-mix(in oklab, var(--color-accent) 75%, white);
+  --font-sans: Manrope, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@layer base {
+  html { scroll-behavior: smooth; color-scheme: dark; }
+  body { @apply bg-page text-ink font-sans antialiased; }
+  h1,h2,h3 { @apply font-bold; text-wrap: balance; }
+  h1 { @apply text-4xl sm:text-5xl lg:text-6xl; line-height: 1.15; letter-spacing: -.035em; }
+  h2 { @apply text-3xl lg:text-4xl; line-height: 1.25; letter-spacing: -.025em; }
+  h3 { @apply text-xl; }
+  p { @apply text-muted leading-relaxed; }
+  a,button,input,select,textarea { transition: color .2s, background-color .2s, border-color .2s, transform .2s, box-shadow .2s; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--color-accent-hover); outline-offset: 5px; }
+  [hidden] { display: none !important; }
+  input,select,textarea { @apply w-full rounded-lg border border-line bg-page px-4 py-3 text-ink; }
+  input[aria-invalid="true"],textarea[aria-invalid="true"] { border-color: #ff7676; }
+  textarea { resize: vertical; }
+}
+:root[data-ui-accent="blue"] { --color-accent: #7dd3fc; --color-on-accent: #080b0f; }
+:root[data-ui-accent="green"] { --color-accent: #86efac; --color-on-accent: #080b0f; }
+:root[data-ui-accent="yellow"] { --color-accent: #fde047; --color-on-accent: #080b0f; }
+:root[data-ui-accent="red"] { --color-accent: #ff4545; --color-on-accent: #080b0f; }
+:root[data-ui-accent="purple"] { --color-accent: #a855f7; --color-on-accent: #080b0f; }
+@layer components {
+  .wrap { @apply mx-auto w-full max-w-[1280px] px-6 lg:px-10; }
+  .section { @apply py-16 lg:py-24; }
+  .eyebrow { @apply mb-5 text-sm font-semibold uppercase tracking-[.16em] text-accent; }
+  .btn { @apply inline-flex min-h-12 items-center justify-center gap-3 rounded-full border border-line px-6 py-3 text-xs font-bold uppercase tracking-[.08em]; transition: color .2s ease, background-color .2s ease, border-color .2s ease; }
+  .btn:hover { @apply border-accent bg-accent/10; }
+  .btn-primary { @apply border-accent bg-accent; color: var(--color-on-accent, white); }
+  .btn-primary:hover { @apply border-accent-hover bg-accent-hover; }
+  .btn:disabled { cursor: wait; opacity: .65; }
+  .tech-icon { @apply mx-auto mb-4 flex h-12 w-12 items-center justify-center text-accent; }
+  .tech-icon svg { width: 36px; height: 36px; }
+  .panel { @apply rounded-xl border border-line bg-card; }
+  .tag { @apply inline-block rounded-full border border-line px-3 py-1 text-xs text-muted; }
+  .nav-link { @apply py-2 text-sm text-muted hover:text-ink; }
+  .nav-link[aria-current="page"] { @apply text-accent; box-shadow: 0 1px var(--color-accent); }
+  .filter[aria-pressed="true"] { @apply border-accent bg-accent; color: var(--color-on-accent, white); }
+  .project-card { @apply overflow-hidden; }
+  .project-card:hover { transform: translateY(-4px); border-color: color-mix(in oklab, var(--color-accent) 55%, var(--color-line)); }
+  .project-card img { @apply aspect-[16/10] w-full object-cover; }
+  .icon { @apply inline-block h-6 w-6 shrink-0; }
+  .field-error { @apply mt-2 text-sm text-red-300; }
+  .site-header { @apply sticky top-0 z-40 border-b border-line bg-page; }
+  .header-row { @apply flex min-h-20 items-center justify-between gap-3 py-4; }
+  .header-brand { @apply shrink-0 text-base font-semibold tracking-tight sm:text-lg; }
+  .menu-toggle { @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line hover:border-accent; }
+  .menu-toggle .icon { @apply h-5 w-5; }
+  .mobile-drawer {
+    @apply fixed inset-y-0 right-0 left-auto m-0 border-l border-line bg-panel text-ink;
+    width: min(360px, 100%); max-width: 100%; height: 100dvh; max-height: 100dvh;
+    padding: 24px; transform: translateX(100%);
+    transition: transform .3s ease;
+  }
+  .mobile-drawer.is-open { transform: translateX(0); }
+  .mobile-drawer::backdrop { background: rgb(0 0 0 / 0); transition: background-color .3s ease; }
+  .mobile-drawer.is-open::backdrop { background: rgb(0 0 0 / .65); }
+  .mobile-drawer .nav-link { @apply py-4 text-lg; }
+  .drawer-close { @apply flex h-11 w-11 items-center justify-center rounded-full border border-line text-2xl hover:border-accent; }
+  .theme-trigger { @apply flex h-11 w-11 items-center justify-center rounded-full border border-line text-accent hover:border-accent; }
+  .theme-popover { @apply m-auto rounded-xl border border-line bg-panel p-6 text-ink; }
+  .theme-popover::backdrop { background: rgb(0 0 0 / .35); }
+  .theme-swatches { @apply flex flex-wrap gap-2; }
+  .theme-swatch { @apply flex h-11 w-11 items-center justify-center rounded-full border border-transparent; }
+  .theme-swatch:hover { @apply border-muted; }
+  .theme-swatch[aria-pressed="true"] { @apply border-ink; }
+  .theme-swatch::before { content: ''; width: 24px; height: 24px; border-radius: 50%; }
+  .theme-swatch[data-accent-choice="blue"]::before { background: #7dd3fc; }
+  .theme-swatch[data-accent-choice="green"]::before { background: #86efac; }
+  .theme-swatch[data-accent-choice="yellow"]::before { background: #fde047; }
+  .theme-swatch[data-accent-choice="red"]::before { background: #ff4545; }
+  .theme-swatch[data-accent-choice="purple"]::before { background: #a855f7; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,*::before,*::after { transition: none !important; animation: none !important; }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "extended-solution",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prebuild:css": "node scripts/vendor-assets.mjs",
+    "build:css": "tailwindcss -i src/styles.css -o src/assets/site.css --minify",
+    "build": "npm run build:css && eleventy",
+    "predev": "node scripts/vendor-assets.mjs",
+    "dev": "concurrently -k \"tailwindcss -i src/styles.css -o src/assets/site.css --watch\" \"eleventy --serve\"",
+    "check": "node scripts/check.mjs",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.2",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@fortawesome/free-brands-svg-icons": "^7.3.1",
+    "@playwright/test": "^1.64.0",
+    "@tailwindcss/cli": "^4.1.0",
+    "concurrently": "^9.2.0",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.1.0"
+  }
+}

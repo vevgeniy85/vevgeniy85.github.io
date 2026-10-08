@@ -1,0 +1,7 @@
+node_modules/
+_site/
+src/assets/site.css
+.env
+test-results/
+.npm-cache/
+playwright-report/

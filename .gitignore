@@ -5,3 +5,10 @@ src/assets/site.css
 test-results/
 .npm-cache/
 playwright-report/
+
+# Local design briefs and source images
+references/
+brief.local.md
+DEVELOPMENT.md
+src/assets/workspace.png
+src/assets/*-original.png

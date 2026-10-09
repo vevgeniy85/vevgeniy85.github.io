@@ -9,7 +9,7 @@
     "build": "npm run build:css && eleventy",
     "predev": "node scripts/vendor-assets.mjs",
     "dev": "concurrently -k \"tailwindcss -i src/styles.css -o src/assets/site.css --watch\" \"eleventy --serve\"",
-    "check": "node scripts/check.mjs",
+    "check": "node scripts/check.mjs && node scripts/check-seo.mjs",
     "test": "playwright test"
   },
   "devDependencies": {

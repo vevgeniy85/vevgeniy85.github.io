@@ -27,6 +27,7 @@ Generated files are in `_site/`. Browser checks use Microsoft Edge.
 - `src/lib/content.js`: projects and translations (EN / UK / RU).
 - `src/pages.11ty.js` and `src/lib/ui.js`: page templates and shared components.
 - `src/styles.css`: styles and the default `--color-accent`.
+- `src/lib/seo.js`: multilingual SEO titles, descriptions and JSON-LD.
 
 Message delivery is disabled until `formEndpoint` is configured.
 

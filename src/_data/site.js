@@ -1,7 +1,7 @@
 export default {
   name: 'Extended Solution',
   author: 'Eugene',
-  origin: '',
+  origin: 'https://xt-solution.com',
   contacts: { email: '', telegram: '', preferred: '' },
   formEndpoint: '',
   experience: [],

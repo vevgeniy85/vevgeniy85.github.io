@@ -8,9 +8,10 @@
   } catch { /* The picker still works when cookies are unavailable. */ }
   document.addEventListener('DOMContentLoaded', () => {
     const buttons = [...document.querySelectorAll('[data-accent-choice]')];
-    const defaults = { '#7dd3fc': 'blue', '#86efac': 'green', '#fde047': 'yellow', '#ff4545': 'red', '#a855f7': 'purple' };
     const update = () => {
-      const selected = root.dataset.uiAccent || defaults[getComputedStyle(root).getPropertyValue('--color-accent').trim().toLowerCase()];
+      const styles = getComputedStyle(root);
+      const accent = styles.getPropertyValue('--color-accent').trim().toLowerCase();
+      const selected = root.dataset.uiAccent || colors.find(color => styles.getPropertyValue(`--accent-${color}`).trim().toLowerCase() === accent);
       buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.accentChoice === selected)));
     };
     update();

@@ -23,9 +23,16 @@
   --color-ink: #f1f4fa;
   --color-muted: #a0adbf;
   /* Change this one value to recolor the interface. */
-  --color-accent: #ff4545; /*#a855f7*/
+  --color-accent: var(--accent-red);
   --color-accent-hover: color-mix(in oklab, var(--color-accent) 75%, white);
   --font-sans: Manrope, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+:root {
+  --accent-blue: #37c6f5;
+  --accent-green: #a5d549;
+  --accent-yellow: #ffd133;
+  --accent-red: #e93e21;
+  --accent-purple: #c762cb;
 }
 @layer base {
   html { scroll-behavior: smooth; color-scheme: dark; }
@@ -43,11 +50,11 @@
   input[aria-invalid="true"],textarea[aria-invalid="true"] { border-color: #ff7676; }
   textarea { resize: vertical; }
 }
-:root[data-ui-accent="blue"] { --color-accent: #7dd3fc; --color-on-accent: #080b0f; }
-:root[data-ui-accent="green"] { --color-accent: #86efac; --color-on-accent: #080b0f; }
-:root[data-ui-accent="yellow"] { --color-accent: #fde047; --color-on-accent: #080b0f; }
-:root[data-ui-accent="red"] { --color-accent: #ff4545; --color-on-accent: #080b0f; }
-:root[data-ui-accent="purple"] { --color-accent: #a855f7; --color-on-accent: #080b0f; }
+:root[data-ui-accent="blue"] { --color-accent: var(--accent-blue); --color-on-accent: #080b0f; }
+:root[data-ui-accent="green"] { --color-accent: var(--accent-green); --color-on-accent: #080b0f; }
+:root[data-ui-accent="yellow"] { --color-accent: var(--accent-yellow); --color-on-accent: #080b0f; }
+:root[data-ui-accent="red"] { --color-accent: var(--accent-red); --color-on-accent: #080b0f; }
+:root[data-ui-accent="purple"] { --color-accent: var(--accent-purple); --color-on-accent: #080b0f; }
 @layer components {
   .wrap { @apply mx-auto w-full max-w-[1280px] px-6 lg:px-10; }
   .section { @apply py-16 lg:py-24; }
@@ -93,11 +100,11 @@
   .theme-swatch:hover { @apply border-muted; }
   .theme-swatch[aria-pressed="true"] { @apply border-ink; }
   .theme-swatch::before { content: ''; width: 24px; height: 24px; border-radius: 50%; }
-  .theme-swatch[data-accent-choice="blue"]::before { background: #7dd3fc; }
-  .theme-swatch[data-accent-choice="green"]::before { background: #86efac; }
-  .theme-swatch[data-accent-choice="yellow"]::before { background: #fde047; }
-  .theme-swatch[data-accent-choice="red"]::before { background: #ff4545; }
-  .theme-swatch[data-accent-choice="purple"]::before { background: #a855f7; }
+  .theme-swatch[data-accent-choice="blue"]::before { background: var(--accent-blue); }
+  .theme-swatch[data-accent-choice="green"]::before { background: var(--accent-green); }
+  .theme-swatch[data-accent-choice="yellow"]::before { background: var(--accent-yellow); }
+  .theme-swatch[data-accent-choice="red"]::before { background: var(--accent-red); }
+  .theme-swatch[data-accent-choice="purple"]::before { background: var(--accent-purple); }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

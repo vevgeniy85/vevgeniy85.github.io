@@ -85,5 +85,72 @@ export const projects = [
       uk: { badge: 'Опублікований сайт', visit: 'Відкрити сайт', about: 'Про сайт', features: 'Функціональність магазину', items: ['Колекції товарів', 'Сторінки товарів', 'Пошук товарів', 'Кошик', 'Блог, FAQ і контакти'] },
       ru: { badge: 'Опубликованный сайт', visit: 'Открыть сайт', about: 'О сайте', features: 'Функциональность магазина', items: ['Коллекции товаров', 'Страницы товаров', 'Поиск товаров', 'Корзина', 'Блог, FAQ и контакты'] }
     }
+  },
+{
+  "slug": "meadow-farm",
+  "preview": "previews/meadow-farm/",
+  "tech": [
+    "HTML",
+    "CSS",
+    "JavaScript"
+  ],
+  "filters": [],
+  "image": "meadow-farm.webp",
+  "name": {
+    "en": "Meadow Farm — farm website",
+    "uk": "Meadow Farm — сайт ферми",
+    "ru": "Meadow Farm — сайт фермы"
+  },
+  "description": {
+    "en": "A responsive farm website concept with a product catalogue, prices, family story and visitor information.",
+    "uk": "Концепція адаптивного сайту ферми з каталогом продукції, цінами, сімейною історією та інформацією для відвідувачів.",
+    "ru": "Концепция адаптивного сайта фермы с каталогом продукции, ценами, семейной историей и информацией для посетителей."
+  },
+  "overview": {
+    "en": "An interactive demonstration of a family farm website: visitors can explore products, search the catalogue, read the farm story and plan a visit. Photographs, prices and business details are sample content; this is not a confirmed client project.",
+    "uk": "Інтерактивна демонстрація сайту сімейної ферми: перегляд продукції, пошук у каталозі, історія ферми та планування візиту. Фото, ціни й дані бізнесу є прикладами; це не підтверджений клієнтський проєкт.",
+    "ru": "Интерактивная демонстрация сайта семейной фермы: просмотр продукции, поиск по каталогу, история фермы и планирование визита. Фото, цены и данные бизнеса — примеры; это не подтверждённый клиентский проект."
+  },
+  "labels": {
+    "en": {
+      "badge": "Demo concept",
+      "visit": "Open preview ↗",
+      "about": "About the concept",
+      "features": "Website features",
+      "items": [
+        "Product catalogue and prices",
+        "Product search and filters",
+        "Farm story",
+        "FAQ and visit information",
+        "Mobile navigation"
+      ]
+    },
+    "uk": {
+      "badge": "Демонстраційна концепція",
+      "visit": "Відкрити демо ↗",
+      "about": "Про концепцію",
+      "features": "Можливості сайту",
+      "items": [
+        "Каталог продукції та ціни",
+        "Пошук і фільтри продукції",
+        "Історія ферми",
+        "FAQ та інформація для візиту",
+        "Мобільна навігація"
+      ]
+    },
+    "ru": {
+      "badge": "Демонстрационная концепция",
+      "visit": "Открыть демо ↗",
+      "about": "О концепции",
+      "features": "Возможности сайта",
+      "items": [
+        "Каталог продукции и цены",
+        "Поиск и фильтры продукции",
+        "История фермы",
+        "FAQ и информация для визита",
+        "Мобильная навигация"
+      ]
+    }
   }
+}
 ];

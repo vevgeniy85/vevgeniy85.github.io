@@ -1,7 +1,7 @@
 import { readdir, readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 async function files(dir) { return (await Promise.all((await readdir(dir,{withFileTypes:true})).map(e=>e.isDirectory()?files(`${dir}/${e.name}`):`${dir}/${e.name}`))).flat(); }
-const pages=(await files('_site')).filter(f=>f.endsWith('.html'));
+const pages=(await files('_site')).filter(f=>f.endsWith('.html') && !f.replaceAll('\\','/').includes('/previews/'));
 const titles=new Set(), descriptions=new Set();
 for (const file of pages) {
   const html=await readFile(file,'utf8');

@@ -3,7 +3,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import { projects, languages } from '../src/lib/content.js';
 async function files(dir) { const entries=await readdir(dir,{withFileTypes:true});return (await Promise.all(entries.map(e=>e.isDirectory()?files(path.join(dir,e.name)):path.join(dir,e.name)))).flat(); }
-const pages=(await files('_site')).filter(f=>f.endsWith('.html'));
+const pages=(await files('_site')).filter(f=>f.endsWith('.html') && !f.replaceAll('\\','/').includes('/previews/'));
 assert.equal(pages.length,(5+projects.length)*languages.length+1,'Expected main pages and all project cases in each language, plus 404');
 const prefix=(process.env.SITE_PATH_PREFIX||'/').replace(/\/$/,'');
 let links=0;
@@ -27,3 +27,21 @@ for(const file of pages){
 const css=await readFile('_site/assets/site.css','utf8');
 assert.ok(css.includes('.grid')&&css.includes('.bg-page')&&css.includes('.btn-primary'),'Tailwind utilities and components were compiled');
 console.log(`Checked ${pages.length} HTML pages, ${links} local links/assets, metadata, anchors and compiled CSS.`);
+
+// Embedded previews have their own page structure and relative URLs.
+const previewFiles = await files('_site/previews');
+for (const file of previewFiles.filter(f => /\.(html|css)$/.test(f))) {
+  const text = await readFile(file, 'utf8');
+  if (file.endsWith('.html')) assert.match(text, /name="robots" content="noindex, follow"/);
+  const urls = [...text.matchAll(/\b(?:href|src|action|poster)=["']([^"']+)["']/g), ...text.matchAll(/url\(["']?([^\s)"']+)["']?\)/g)].map(m => m[1]);
+  for (const url of urls) {
+    if (/^(?:[a-z]+:|#|\/\/)/i.test(url)) continue;
+    assert.ok(!url.startsWith('/'), file + ': preview URL must be relative: ' + url);
+    const clean = decodeURIComponent(url.split(/[?#]/)[0]);
+    if (!clean) continue;
+    const target = path.resolve(path.dirname(file), clean);
+    assert.ok(target.startsWith(path.resolve('_site/previews') + path.sep), file + ': URL escapes previews: ' + url);
+    await access(clean.endsWith('/') ? path.join(target, 'index.html') : target);
+  }
+}
+console.log('Embedded preview links, resources and noindex metadata verified.');

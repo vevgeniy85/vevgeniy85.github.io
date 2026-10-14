@@ -35,8 +35,8 @@ export function seoHead({lang, route, site, title, description, noindex = false,
   const index = projects.indexOf(project);
   const copy = pageCopy[lang][project?.slug || route];
   const demoTitle = { en: 'demo concept', uk: 'демоконцепція', ru: 'демоконцепция' }[lang];
-  const metaTitle = `${copy?.[0] || `${t.projectNames[index]} — ${project.tech[0]} ${demoTitle}`} | ${site.name}`;
-  const metaDescription = copy?.[1] || `${t.projectDescriptions[index]} ${t.demo}.`;
+  const metaTitle = `${copy?.[0] || `${project.name?.[lang] || t.projectNames[index]} — ${project.tech[0]} ${demoTitle}`} | ${site.name}`;
+  const metaDescription = copy?.[1] || project.description?.[lang] || `${t.projectDescriptions[index]} ${t.demo}.`;
   const absolute = (language, path='') => site.origin.replace(/\/$/,'') + href(language,path);
   const url = absolute(lang,route);
   const root = absolute('en');
@@ -53,14 +53,14 @@ export function seoHead({lang, route, site, title, description, noindex = false,
   if (route === 'about') page.mainEntity = {'@id':personId};
   if (project) {
     const workId = url+'#project';
-    const work = { '@type':'CreativeWork', '@id':workId, name:project.real ? project.name[lang] : `${t.projectNames[index]} — ${t.demo}`, description:project.real ? project.overview[lang] : t.projectDescriptions[index], inLanguage:lang, url:project.url || url, mainEntityOfPage:{'@id':pageId} };
+    const work = { '@type':'CreativeWork', '@id':workId, name:project.name ? project.name[lang] : `${t.projectNames[index]} — ${t.demo}`, description:project.name ? project.overview[lang] : t.projectDescriptions[index], inLanguage:lang, url:project.url || url, mainEntityOfPage:{'@id':pageId} };
     if (project.contribution) { work.contributor={'@id':personId}; work.creditText=project.contribution[lang].text; }
     graph.push(work); page.mainEntity={'@id':workId};
   }
   if (route === 'portfolio') {
     const listId=url+'#projects';
-    const ordered=[...projects.filter(p=>p.real),...projects.filter(p=>!p.real)];
-    graph.push({'@type':'ItemList','@id':listId,itemListElement:ordered.map((p,i)=>({'@type':'ListItem',position:i+1,name:p.real?p.name[lang]:`${t.projectNames[projects.indexOf(p)]} — ${t.demo}`,url:absolute(lang,'portfolio/'+p.slug)}))});
+    const ordered=[...projects.filter(p=>p.name),...projects.filter(p=>!p.name)];
+    graph.push({'@type':'ItemList','@id':listId,itemListElement:ordered.map((p,i)=>({'@type':'ListItem',position:i+1,name:p.name?p.name[lang]:`${t.projectNames[projects.indexOf(p)]} — ${t.demo}`,url:absolute(lang,'portfolio/'+p.slug)}))});
     page.mainEntity={'@id':listId};
   }
   if (route === 'services') {

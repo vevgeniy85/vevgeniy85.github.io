@@ -114,7 +114,7 @@ export const projects = [
   "labels": {
     "en": {
       "badge": "Demo concept",
-      "visit": "Open preview ↗",
+      "visit": "Open preview",
       "about": "About the concept",
       "features": "Website features",
       "items": [
@@ -127,7 +127,7 @@ export const projects = [
     },
     "uk": {
       "badge": "Демонстраційна концепція",
-      "visit": "Відкрити демо ↗",
+      "visit": "Відкрити демо",
       "about": "Про концепцію",
       "features": "Можливості сайту",
       "items": [
@@ -140,7 +140,7 @@ export const projects = [
     },
     "ru": {
       "badge": "Демонстрационная концепция",
-      "visit": "Открыть демо ↗",
+      "visit": "Открыть демо",
       "about": "О концепции",
       "features": "Возможности сайта",
       "items": [
@@ -183,7 +183,7 @@ export const projects = [
   "labels": {
     "en": {
       "badge": "Website preview",
-      "visit": "Open preview ↗",
+      "visit": "Open preview",
       "about": "About the website",
       "features": "Website features",
       "items": [
@@ -196,7 +196,7 @@ export const projects = [
     },
     "uk": {
       "badge": "Демо сайту",
-      "visit": "Відкрити демо ↗",
+      "visit": "Відкрити демо",
       "about": "Про сайт",
       "features": "Можливості сайту",
       "items": [
@@ -209,7 +209,7 @@ export const projects = [
     },
     "ru": {
       "badge": "Демо сайта",
-      "visit": "Открыть демо ↗",
+      "visit": "Открыть демо",
       "about": "О сайте",
       "features": "Возможности сайта",
       "items": [

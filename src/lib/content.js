@@ -166,9 +166,9 @@ export const projects = [
   ],
   "image": "schastlyva-malecha.webp",
   "name": {
-    "en": "Shchaslyva Malecha — toy shop",
-    "uk": "Щаслива малеча — магазин іграшок",
-    "ru": "Щаслива малеча — магазин игрушек"
+    "en": "Children’s Toys — toy shop",
+    "uk": "Дитячі іграшки — магазин іграшок",
+    "ru": "Дитячі іграшки — магазин игрушек"
   },
   "description": {
     "en": "A responsive toy shop brochure website with product categories, three store locations and social channels.",
@@ -176,9 +176,9 @@ export const projects = [
     "ru": "Адаптивный сайт-визитка магазина игрушек с категориями ассортимента, тремя филиалами и социальными сетями."
   },
   "overview": {
-    "en": "A brochure website for “Shchaslyva Malecha”: visitors can explore toy categories, switch between three store locations, find contact information and ask about products on Instagram. The interface includes animated toy compositions, a photo feed and FAQ. The preview contains sample store contact details.",
-    "uk": "Сайт-візитка «Щаслива малеча»: відвідувачі можуть переглянути категорії іграшок, перемикатися між трьома філіями, знайти контакти та запитати про товари в Instagram. Інтерфейс містить анімовані композиції з іграшками, фотострічку та FAQ. У демо використано приклади контактних даних магазинів.",
-    "ru": "Сайт-визитка «Щаслива малеча»: посетители могут просмотреть категории игрушек, переключаться между тремя филиалами, найти контакты и спросить о товарах в Instagram. Интерфейс включает анимированные композиции с игрушками, фотоленту и FAQ. В демо использованы примеры контактных данных магазинов."
+    "en": "A brochure website for “Children’s Toys”: visitors can explore toy categories, switch between three store locations, find contact information and ask about products on Instagram. The interface includes animated toy compositions, a photo feed and FAQ. The preview contains sample store contact details.",
+    "uk": "Сайт-візитка «Дитячі іграшки»: відвідувачі можуть переглянути категорії іграшок, перемикатися між трьома філіями, знайти контакти та запитати про товари в Instagram. Інтерфейс містить анімовані композиції з іграшками, фотострічку та FAQ. У демо використано приклади контактних даних магазинів.",
+    "ru": "Сайт-визитка «Дитячі іграшки»: посетители могут просмотреть категории игрушек, переключаться между тремя филиалами, найти контакты и спросить о товарах в Instagram. Интерфейс включает анимированные композиции с игрушками, фотоленту и FAQ. В демо использованы примеры контактных данных магазинов."
   },
   "labels": {
     "en": {

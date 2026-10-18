@@ -1,4 +1,28 @@
-const config=window.MALECHA_CONFIG||{};const phones=document.querySelector('.phones');const toggle=document.querySelector('.menu-toggle');const menu=document.getElementById('mobile-menu');function closeMenu(){toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Відкрити меню');menu.hidden=true}toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Закрити меню':'Відкрити меню');menu.hidden=!open});menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));document.addEventListener('click',e=>{if(!phones.contains(e.target))phones.open=false;if(!e.target.closest('.site-header'))closeMenu()});document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(phones.open){phones.open=false;phones.querySelector('summary').focus()}if(!menu.hidden){closeMenu();toggle.focus()}}});matchMedia('(min-width:1024px)').addEventListener('change',e=>{if(e.matches)closeMenu()});document.querySelectorAll('.faq').forEach(item=>item.addEventListener('toggle',()=>{if(item.open)document.querySelectorAll('.faq').forEach(other=>{if(other!==item)other.open=false})}));for(const kind of ['telegram','viber']){if(config.channels?.[kind])document.querySelectorAll('[data-channel="'+kind+'"]').forEach(a=>a.href=config.channels[kind])}for(const [i,store] of (config.stores||[]).entries()){if(store.hours)document.querySelectorAll('[data-store-hours="'+i+'"]').forEach(el=>el.textContent=store.hours);if(store.address)document.querySelectorAll('[data-store-address="'+i+'"]').forEach(el=>el.textContent=store.address);if(store.phone){document.querySelectorAll('[data-store-phone="'+i+'"]').forEach(el=>{const a=document.createElement('a');a.dataset.storePhone=i;a.textContent=store.phone;a.href='tel:'+store.phone.replace(/[^+0-9]/g,'');el.replaceWith(a)});if(i===0){const el=document.querySelector('[data-primary-phone]');el.textContent=store.phone}}if(store.mapUrl)document.querySelectorAll('[data-store-map="'+i+'"]').forEach(a=>{a.href=store.mapUrl;a.setAttribute('aria-label','Маршрут до магазину '+(i+1));a.innerHTML='Маршрут <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>'})}
+const config=window.MALECHA_CONFIG||{};
+const phones=document.querySelector('.phones');
+const toggle=document.querySelector('.menu-toggle');
+const menu=document.getElementById('mobile-menu');
+const menuBackground=[document.querySelector('main'),document.querySelector('footer'),document.querySelector('.social-widget'),document.querySelector('.header-contact'),document.querySelector('.brand')].filter(Boolean);
+function closeMenu(){
+ toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Відкрити меню');
+ toggle.querySelector('i').className='fa-solid fa-bars';menu.hidden=true;
+ document.body.classList.remove('menu-open');menuBackground.forEach(el=>el.inert=false);
+}
+toggle.addEventListener('click',()=>{
+ if(!menu.hidden){closeMenu();return;}
+ phones.open=false;toggle.setAttribute('aria-expanded','true');toggle.setAttribute('aria-label','Закрити меню');
+ toggle.querySelector('i').className='fa-solid fa-xmark';menu.hidden=false;
+ document.body.classList.add('menu-open');menuBackground.forEach(el=>el.inert=true);
+ menu.querySelector('a').focus({preventScroll:true});
+});
+menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));
+document.addEventListener('click',e=>{if(!phones.contains(e.target))phones.open=false;});
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'){if(phones.open){phones.open=false;phones.querySelector('summary').focus()}if(!menu.hidden){closeMenu();toggle.focus()}}
+ if(e.key==='Tab'&&!menu.hidden){const links=[toggle,...menu.querySelectorAll('a')];const first=links[0],last=links.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}
+});
+matchMedia('(min-width:1024px)').addEventListener('change',e=>{if(e.matches)closeMenu()});
+document.querySelectorAll('.faq').forEach(item=>item.addEventListener('toggle',()=>{if(item.open)document.querySelectorAll('.faq').forEach(other=>{if(other!==item)other.open=false})}));for(const [i,store] of (config.stores||[]).entries()){if(store.hours)document.querySelectorAll('[data-store-hours="'+i+'"]').forEach(el=>el.textContent=store.hours);if(store.address)document.querySelectorAll('[data-store-address="'+i+'"]').forEach(el=>el.textContent=store.address);if(store.phone){document.querySelectorAll('[data-store-phone="'+i+'"]').forEach(el=>{const a=document.createElement('a');a.dataset.storePhone=i;a.textContent=store.phone;a.href='tel:'+store.phone.replace(/[^+0-9]/g,'');el.replaceWith(a)});if(i===0){const el=document.querySelector('[data-primary-phone]');el.textContent=store.phone}}if(store.mapUrl)document.querySelectorAll('[data-store-map="'+i+'"]').forEach(a=>{a.href=store.mapUrl;a.setAttribute('aria-label','Маршрут до магазину '+(i+1));a.innerHTML='Маршрут <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>'})}
 const socialWidget = document.querySelector('.social-widget');
 const socialToggle = socialWidget.querySelector('.social-widget-toggle');
 const socialPanel = socialWidget.querySelector('.social-widget-panel');
@@ -77,12 +101,14 @@ const instagramPrev = document.querySelector('.instagram-prev');
 const instagramNext = document.querySelector('.instagram-next');
 function updateInstagramControls() {
   instagramPrev.disabled = instagramReel.scrollLeft < 2;
-  instagramNext.disabled = instagramReel.scrollLeft + instagramReel.clientWidth >= instagramReel.scrollWidth - 2;
+  instagramNext.disabled = instagramReel.scrollLeft + instagramReel.clientWidth >= instagramReel.scrollWidth - 4;
 }
 function scrollInstagram(direction) {
   const item = instagramReel.querySelector('.instagram-post');
   const step = item.getBoundingClientRect().width + parseFloat(getComputedStyle(instagramReel).columnGap);
-  instagramReel.scrollBy({ left: step * direction, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+  const limit = Math.max(0, instagramReel.scrollWidth - instagramReel.clientWidth);
+  const destination = Math.max(0, Math.min(limit, instagramReel.scrollLeft + step * direction));
+  instagramReel.scrollTo({ left: destination, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
 }
 instagramPrev.addEventListener('click', () => scrollInstagram(-1));
 instagramNext.addEventListener('click', () => scrollInstagram(1));
@@ -133,4 +159,44 @@ window.addEventListener('scroll', queueDream, { passive:true });
 window.addEventListener('resize', queueDream);
 dreamMotion.addEventListener('change', queueDream);
 queueDream();
+}
+
+// Placeholder social links stay on the current page until client URLs are supplied.
+document.querySelectorAll('a[href="#"]').forEach(link=>link.addEventListener('click',event=>event.preventDefault()));
+
+
+const reviewsReel=document.querySelector('.reviews-reel');
+if(reviewsReel){
+ const originals=[...reviewsReel.querySelectorAll('.review-card')];
+ const dots=[...document.querySelectorAll('[data-review]')];
+ const count=originals.length;
+ const mobile=matchMedia('(max-width:1023px)');
+ const reduced=matchMedia('(prefers-reduced-motion:reduce)');
+ const clone=card=>{const copy=card.cloneNode(true);copy.classList.add('review-clone');copy.setAttribute('aria-hidden','true');copy.inert=true;return copy};
+ reviewsReel.prepend(...originals.map(clone));reviewsReel.append(...originals.map(clone));
+ let physical=count,settleTimer;
+ const modulo=index=>(index%count+count)%count;
+ const step=()=>originals[0].getBoundingClientRect().width+parseFloat(getComputedStyle(reviewsReel).columnGap);
+ function indicate(index,announce=false){dots.forEach((dot,i)=>dot.setAttribute('aria-current',String(i===index)));if(announce)document.querySelector('.reviews-status').textContent='Відгук '+(index+1)+' із '+count}
+ function settle(){
+  if(!mobile.matches)return;
+  const unit=step();physical=Math.round(reviewsReel.scrollLeft/unit);
+  const logical=modulo(physical);
+  if(physical<count||physical>=count*2){const offset=reviewsReel.scrollLeft-physical*unit;physical=count+logical;reviewsReel.scrollTo({left:physical*unit+offset,behavior:'instant'})}
+  indicate(logical);
+ }
+ function moveTo(index){
+  if(!mobile.matches)return;
+  physical=index;indicate(modulo(index),true);
+  reviewsReel.scrollTo({left:index*step(),behavior:reduced.matches?'instant':'smooth'});
+ }
+ function reset(){clearTimeout(settleTimer);physical=count;reviewsReel.scrollTo({left:mobile.matches?count*step():0,behavior:'instant'});indicate(0)}
+ document.querySelector('.reviews-prev').addEventListener('click',()=>moveTo(physical-1));
+ document.querySelector('.reviews-next').addEventListener('click',()=>moveTo(physical+1));
+ dots.forEach((dot,i)=>dot.addEventListener('click',()=>{const current=modulo(physical);let delta=i-current;if(delta>count/2)delta-=count;if(delta<-count/2)delta+=count;moveTo(physical+delta)}));
+ reviewsReel.addEventListener('keydown',event=>{if(!mobile.matches)return;let next;if(event.key==='ArrowRight')next=physical+1;if(event.key==='ArrowLeft')next=physical-1;if(event.key==='Home')next=count;if(event.key==='End')next=count*2-1;if(next!==undefined){event.preventDefault();moveTo(next)}});
+ reviewsReel.addEventListener('scroll',()=>{if(!mobile.matches)return;clearTimeout(settleTimer);indicate(modulo(Math.round(reviewsReel.scrollLeft/step())));settleTimer=setTimeout(settle,180)},{passive:true});
+ reviewsReel.addEventListener('scrollend',settle);
+ new ResizeObserver(reset).observe(reviewsReel);
+ reset();
 }

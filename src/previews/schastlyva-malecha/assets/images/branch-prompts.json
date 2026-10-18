@@ -1,0 +1,9 @@
+{
+  "tool": "Built-in image_gen",
+  "purpose": "Illustrative replacement photos, not actual store interiors",
+  "prompts": [
+    "Standalone sharp landscape photograph 1536x1024 of an ordinary neighborhood toy shop: bright white shelving, colorful toy boxes, prominent plush animals on left, broad central display table and clear aisle, daylight from storefront, no people, no logo, no blur. Documentary retail smartphone style, not luxury boutique, entire shop scene in focus.",
+    "Standalone sharp landscape photograph 1536x1024 of a DIFFERENT small toy shop: warm wood shelving full of board games and toy cars, blue lower shelving, corner perspective with checkout desk on right, ordinary ceiling LED lighting, dense colorful retail packaging, no people, no logo or text overlays, no blur. Realistic documentary shop photo.",
+    "Standalone sharp landscape photograph 1536x1024 of a third distinct children's toy shop: green shelf ends, wall display of dolls and interactive musical plastic toys, large plush teddy near front window, view diagonally across open shop floor rather than straight aisle, ordinary mall store lighting, colorful genuine retail feel, no people, no logo, no blur, no website UI."
+  ]
+}

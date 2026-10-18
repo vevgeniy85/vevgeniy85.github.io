@@ -152,5 +152,74 @@ export const projects = [
       ]
     }
   }
+},
+{
+  "slug": "schastlyva-malecha",
+  "preview": "previews/schastlyva-malecha/",
+  "tech": [
+    "HTML",
+    "Tailwind CSS",
+    "JavaScript"
+  ],
+  "filters": [
+    "landing"
+  ],
+  "image": "schastlyva-malecha.webp",
+  "name": {
+    "en": "Shchaslyva Malecha — toy shop",
+    "uk": "Щаслива малеча — магазин іграшок",
+    "ru": "Щаслива малеча — магазин игрушек"
+  },
+  "description": {
+    "en": "A responsive toy shop brochure website with product categories, three store locations and social channels.",
+    "uk": "Адаптивний сайт-візитка магазину іграшок із категоріями асортименту, трьома філіями та соціальними мережами.",
+    "ru": "Адаптивный сайт-визитка магазина игрушек с категориями ассортимента, тремя филиалами и социальными сетями."
+  },
+  "overview": {
+    "en": "A brochure website for “Shchaslyva Malecha”: visitors can explore toy categories, switch between three store locations, find contact information and ask about products on Instagram. The interface includes animated toy compositions, a photo feed and FAQ. The preview contains sample store contact details.",
+    "uk": "Сайт-візитка «Щаслива малеча»: відвідувачі можуть переглянути категорії іграшок, перемикатися між трьома філіями, знайти контакти та запитати про товари в Instagram. Інтерфейс містить анімовані композиції з іграшками, фотострічку та FAQ. У демо використано приклади контактних даних магазинів.",
+    "ru": "Сайт-визитка «Щаслива малеча»: посетители могут просмотреть категории игрушек, переключаться между тремя филиалами, найти контакты и спросить о товарах в Instagram. Интерфейс включает анимированные композиции с игрушками, фотоленту и FAQ. В демо использованы примеры контактных данных магазинов."
+  },
+  "labels": {
+    "en": {
+      "badge": "Website preview",
+      "visit": "Open preview ↗",
+      "about": "About the website",
+      "features": "Website features",
+      "items": [
+        "Toy assortment categories",
+        "Three store locations with tabs",
+        "Instagram photo feed",
+        "Telegram and Viber links",
+        "FAQ and mobile navigation"
+      ]
+    },
+    "uk": {
+      "badge": "Демо сайту",
+      "visit": "Відкрити демо ↗",
+      "about": "Про сайт",
+      "features": "Можливості сайту",
+      "items": [
+        "Категорії асортименту іграшок",
+        "Три філії з перемиканням вкладок",
+        "Фотострічка Instagram",
+        "Посилання на Telegram і Viber",
+        "FAQ та мобільна навігація"
+      ]
+    },
+    "ru": {
+      "badge": "Демо сайта",
+      "visit": "Открыть демо ↗",
+      "about": "О сайте",
+      "features": "Возможности сайта",
+      "items": [
+        "Категории ассортимента игрушек",
+        "Три филиала с переключением вкладок",
+        "Фотолента Instagram",
+        "Ссылки на Telegram и Viber",
+        "FAQ и мобильная навигация"
+      ]
+    }
+  }
 }
 ];

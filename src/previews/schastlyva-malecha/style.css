@@ -445,8 +445,8 @@ body .ui-action.ui-action:focus-visible,.channel-card:focus-visible,.branch-tabs
 /* Mobile header and full-screen navigation. */
 .phones summary{padding:0;min-height:44px;border-radius:0;gap:8px}
 .phones summary:hover{background:transparent}
-.phones summary .header-phone-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--soft);font-size:16px;flex-shrink:0}
-.phones summary:hover .header-phone-icon{background:var(--ui-hover)}
+.phones summary .header-phone-icon{display:grid;place-items:center;width:20px;height:20px;border-radius:0;background:transparent;font-size:16px;flex-shrink:0}
+.phones summary:hover .header-phone-icon{background:transparent}
 .site-footer{background:var(--accent);color:#fff;--line:#ffffff26}
 .site-footer .brand,.site-footer .brand:hover,.site-footer a:hover{color:#fff}
 .site-footer .footer-bottom{color:#dedbea;border-color:#ffffff26}
@@ -545,3 +545,61 @@ body .ui-action.ui-action:focus-visible,.channel-card:focus-visible,.branch-tabs
  .hero .hero-wash{display:none}
  .hero .hero-photo{order:1;position:relative;inset:auto;z-index:auto;width:100%;aspect-ratio:4/3;background-size:cover;background-position:60% center;border-radius:24px 24px 0 0}
 }
+
+/* Footer: brand and three store columns, stacked on phones. */
+.site-footer .footer-main{grid-template-columns:minmax(0,1fr);gap:28px}
+.site-footer .footer-contact{justify-self:stretch;min-width:0;color:#fff}
+.site-footer .footer-phones{grid-template-columns:minmax(0,1fr);gap:24px}
+.site-footer .footer-phones .footer-location{display:block;white-space:normal;min-width:0}
+.footer-location h3{color:#fff;font-size:14px;line-height:1.5;letter-spacing:0;font-weight:600;margin:0 0 8px}
+.footer-location-phone{display:flex;align-items:center;gap:10px}
+.site-footer .footer-location-phone a{min-height:44px;font-size:13px;white-space:nowrap}
+@media(min-width:768px){
+ .site-footer .footer-main{grid-template-columns:minmax(0,1fr);gap:32px}
+ .site-footer .footer-phones{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+ .site-footer .footer-main .brand{gap:10px}
+ .site-footer .footer-main .brand img{width:44px;height:44px}
+ .site-footer .footer-main .brand span{font-size:18px}
+}
+
+@media(min-width:1024px){.site-footer .footer-main{grid-template-columns:minmax(0,1fr) minmax(0,3fr)}}
+
+/* Anchor the floating contact widget to the content container on wide screens. */
+@media(min-width:2561px){.social-widget{right:max(24px,calc((100% - 1170px)/2 + 24px))}}
+
+/* Subtle photo zoom, clipped without affecting album tape or sticky positioning. */
+.album-image-clip,.branch-panel{overflow:hidden}
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+ .album-image-clip img,.branch-image{transition:transform 320ms cubic-bezier(.2,.65,.3,1)}
+ .category-card:hover .album-image-clip img,.branch-panel:hover .branch-image,.branch-panel:focus-visible .branch-image{transform:scale(1.035)}
+}
+
+@media(hover:hover) and (pointer:fine){.instagram-reel,.instagram-post{cursor:grab}.instagram-reel.is-dragging,.instagram-reel.is-dragging .instagram-post{cursor:grabbing}.instagram-reel{user-select:none;-webkit-user-select:none}}
+.instagram-reel.is-dragging{scroll-snap-type:none;scroll-behavior:auto}
+
+/* Compact store contacts with separators between neighbouring stores. */
+.site-footer .footer-phones{gap:0}
+.site-footer .footer-location{position:relative}
+.footer-location h3{margin-bottom:0;line-height:1.4}
+.site-footer .footer-location-phone a{min-height:36px}
+@media(max-width:767px){
+ .site-footer .footer-location-phone a{min-height:44px}
+ .site-footer .footer-phones .footer-location+.footer-location{border-top:1px solid #ffffff26;margin-top:12px;padding-top:16px}
+}
+@media(min-width:768px){
+ .site-footer .footer-phones{gap:32px}
+ .site-footer .footer-location+.footer-location::before{content:"";position:absolute;left:-16px;top:2px;bottom:2px;width:1px;background:#ffffff26}
+}
+
+/* Static toy motifs live in their own clipped background layer. */
+.site-footer .section-decoration{opacity:1;color:#fff}
+.site-footer .section-decoration i{opacity:.07}
+.site-footer .section-decoration .decoration-first{font-size:68px;top:-12px;right:2%;transform:rotate(18deg)}
+.site-footer .section-decoration .decoration-second{font-size:76px;left:1%;bottom:-18px;transform:rotate(-18deg)}
+.site-footer .footer-decoration-shapes{font-size:42px;left:46%;bottom:-8px;transform:rotate(12deg)}
+@media(max-width:767px){
+ .site-footer .section-decoration .decoration-first{right:-12px;top:24px;font-size:74px}
+ .site-footer .section-decoration .decoration-second{left:auto;right:-16px;bottom:180px;font-size:90px}
+ .site-footer .footer-decoration-shapes{left:-12px;bottom:24px;font-size:48px}
+}
+

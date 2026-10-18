@@ -2,7 +2,7 @@ const config=window.MALECHA_CONFIG||{};
 const phones=document.querySelector('.phones');
 const toggle=document.querySelector('.menu-toggle');
 const menu=document.getElementById('mobile-menu');
-const menuBackground=[document.querySelector('main'),document.querySelector('footer'),document.querySelector('.social-widget'),document.querySelector('.header-contact'),document.querySelector('.brand')].filter(Boolean);
+const menuBackground=[document.querySelector('main'),document.querySelector('footer'),document.querySelector('.social-widget'),document.querySelector('.brand')].filter(Boolean);
 function closeMenu(){
  toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Відкрити меню');
  toggle.querySelector('i').className='fa-solid fa-bars';menu.hidden=true;
@@ -15,14 +15,36 @@ toggle.addEventListener('click',()=>{
  document.body.classList.add('menu-open');menuBackground.forEach(el=>el.inert=true);
  menu.querySelector('a').focus({preventScroll:true});
 });
+phones.querySelector('summary').addEventListener('click',()=>{if(!menu.hidden)closeMenu()});
 menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));
 document.addEventListener('click',e=>{if(!phones.contains(e.target))phones.open=false;});
 document.addEventListener('keydown',e=>{
  if(e.key==='Escape'){if(phones.open){phones.open=false;phones.querySelector('summary').focus()}if(!menu.hidden){closeMenu();toggle.focus()}}
- if(e.key==='Tab'&&!menu.hidden){const links=[toggle,...menu.querySelectorAll('a')];const first=links[0],last=links.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}
+ if(e.key==='Tab'&&!menu.hidden){const links=[phones.querySelector('summary'),toggle,...menu.querySelectorAll('a')];const first=links[0],last=links.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}
 });
 matchMedia('(min-width:1024px)').addEventListener('change',e=>{if(e.matches)closeMenu()});
-document.querySelectorAll('.faq').forEach(item=>item.addEventListener('toggle',()=>{if(item.open)document.querySelectorAll('.faq').forEach(other=>{if(other!==item)other.open=false})}));for(const [i,store] of (config.stores||[]).entries()){if(store.hours)document.querySelectorAll('[data-store-hours="'+i+'"]').forEach(el=>el.textContent=store.hours);if(store.address)document.querySelectorAll('[data-store-address="'+i+'"]').forEach(el=>el.textContent=store.address);if(store.phone){document.querySelectorAll('[data-store-phone="'+i+'"]').forEach(el=>{const a=document.createElement('a');a.dataset.storePhone=i;a.textContent=store.phone;a.href='tel:'+store.phone.replace(/[^+0-9]/g,'');el.replaceWith(a)});if(i===0){const el=document.querySelector('[data-primary-phone]');el.textContent=store.phone}}if(store.mapUrl)document.querySelectorAll('[data-store-map="'+i+'"]').forEach(a=>{a.href=store.mapUrl;a.setAttribute('aria-label','Маршрут до магазину '+(i+1));a.innerHTML='Маршрут <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>'})}
+const faqItems=[...document.querySelectorAll('.faq')];
+const faqMotion=matchMedia('(prefers-reduced-motion:reduce)');
+const faqAnimations=new Map();
+function setFaqOpen(item,open){
+ const start=item.getBoundingClientRect().height;
+ const previous=faqAnimations.get(item);
+ if(previous){previous.onfinish=null;previous.cancel();faqAnimations.delete(item)}
+ item.dataset.expanded=String(open);
+ if(faqMotion.matches){item.open=open;return}
+ item.open=true;
+ const end=open?item.getBoundingClientRect().height:item.querySelector('summary').getBoundingClientRect().height+parseFloat(getComputedStyle(item).borderBottomWidth);
+ const animation=item.animate([{height:start+'px'},{height:end+'px'}],{duration:280,easing:'cubic-bezier(.25,.1,.25,1)'});
+ faqAnimations.set(item,animation);item.style.overflow='hidden';
+ animation.onfinish=()=>{item.open=open;item.style.overflow='';faqAnimations.delete(item)};
+}
+faqItems.forEach(item=>item.querySelector('summary').addEventListener('click',event=>{
+ event.preventDefault();const open=item.dataset.expanded?item.dataset.expanded!=='true':!item.open;
+ if(open)faqItems.forEach(other=>{if(other!==item&&(other.open||other.dataset.expanded==='true'))setFaqOpen(other,false)});
+ setFaqOpen(item,open);
+}));
+faqMotion.addEventListener('change',()=>{if(faqMotion.matches)faqItems.forEach(item=>{if(faqAnimations.has(item)){const open=item.dataset.expanded==='true';setFaqOpen(item,open);item.style.overflow=''}})});
+for(const [i,store] of (config.stores||[]).entries()){if(store.hours)document.querySelectorAll('[data-store-hours="'+i+'"]').forEach(el=>el.textContent=store.hours);if(store.address)document.querySelectorAll('[data-store-address="'+i+'"]').forEach(el=>el.textContent=store.address);if(store.phone){document.querySelectorAll('[data-store-phone="'+i+'"]').forEach(el=>{const a=document.createElement('a');a.dataset.storePhone=i;a.textContent=store.phone;a.href='tel:'+store.phone.replace(/[^+0-9]/g,'');el.replaceWith(a)});if(i===0){const el=document.querySelector('[data-primary-phone]');el.textContent=store.phone}}if(store.mapUrl)document.querySelectorAll('[data-store-map="'+i+'"]').forEach(a=>{a.href=store.mapUrl;a.setAttribute('aria-label','Маршрут до магазину '+(i+1));a.innerHTML='Маршрут <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>'})}
 const socialWidget = document.querySelector('.social-widget');
 const socialToggle = socialWidget.querySelector('.social-widget-toggle');
 const socialPanel = socialWidget.querySelector('.social-widget-panel');
@@ -110,6 +132,44 @@ function scrollInstagram(direction) {
   const destination = Math.max(0, Math.min(limit, instagramReel.scrollLeft + step * direction));
   instagramReel.scrollTo({ left: destination, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
 }
+// Native touch scrolling stays intact; mouse dragging uses pointer capture.
+let instagramDrag=null;
+let instagramSuppressClick=false;
+instagramReel.addEventListener('dragstart',event=>event.preventDefault());
+instagramReel.addEventListener('pointerdown',event=>{
+ if(event.pointerType!=='mouse'||event.button!==0)return;
+ instagramSuppressClick=false;
+ instagramDrag={id:event.pointerId,x:event.clientX,y:event.clientY,left:instagramReel.scrollLeft,active:false};
+});
+instagramReel.addEventListener('pointermove',event=>{
+ const drag=instagramDrag;if(!drag||drag.id!==event.pointerId)return;
+ const dx=event.clientX-drag.x;
+ if(!drag.active){
+  if(Math.abs(dx)<6)return;
+  if(Math.abs(event.clientY-drag.y)>Math.abs(dx)){instagramDrag=null;return}
+  drag.active=true;instagramSuppressClick=true;
+  instagramReel.classList.add('is-dragging');
+  instagramReel.setPointerCapture(event.pointerId);
+ }
+ event.preventDefault();instagramReel.scrollLeft=drag.left-dx;
+});
+function endInstagramDrag(event){
+ const drag=instagramDrag;if(!drag||drag.id!==event.pointerId)return;
+ instagramDrag=null;
+ if(drag.active){
+  instagramReel.classList.remove('is-dragging');
+  if(instagramReel.hasPointerCapture(event.pointerId))instagramReel.releasePointerCapture(event.pointerId);
+  const item=instagramReel.querySelector('.instagram-post');
+  const step=item.getBoundingClientRect().width+parseFloat(getComputedStyle(instagramReel).columnGap);
+  const limit=instagramReel.scrollWidth-instagramReel.clientWidth;
+  instagramReel.scrollTo({left:Math.max(0,Math.min(limit,Math.round(instagramReel.scrollLeft/step)*step)),behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
+ }
+}
+instagramReel.addEventListener('pointerup',endInstagramDrag);
+instagramReel.addEventListener('pointercancel',endInstagramDrag);
+instagramReel.addEventListener('lostpointercapture',endInstagramDrag);
+instagramReel.addEventListener('pointerleave',event=>{if(instagramDrag&&!instagramDrag.active)instagramDrag=null});
+instagramReel.addEventListener('click',event=>{if(instagramSuppressClick){event.preventDefault();event.stopImmediatePropagation();instagramSuppressClick=false}},true);
 instagramPrev.addEventListener('click', () => scrollInstagram(-1));
 instagramNext.addEventListener('click', () => scrollInstagram(1));
 instagramReel.addEventListener('scroll', updateInstagramControls, { passive: true });

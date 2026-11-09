@@ -93,8 +93,8 @@
   .mobile-drawer .nav-link { @apply py-4 text-lg; }
   .drawer-close { @apply flex h-11 w-11 items-center justify-center rounded-full border border-line text-2xl hover:border-accent; }
   .theme-trigger { @apply flex h-11 w-11 items-center justify-center rounded-full border border-line text-accent hover:border-accent; }
-  .theme-popover { @apply m-auto rounded-xl border border-line bg-panel p-6 text-ink; }
-  .theme-popover::backdrop { background: rgb(0 0 0 / .35); }
+  .theme-popover { @apply fixed m-0 rounded-xl border border-line bg-panel p-6 text-ink; inset: auto; max-width: calc(100vw - 32px); box-shadow: 0 12px 32px rgb(0 0 0 / .25); }
+  .theme-popover::backdrop { background: transparent; }
   .theme-swatches { @apply flex flex-wrap gap-2; }
   .theme-swatch { @apply flex h-11 w-11 items-center justify-center rounded-full border border-transparent; }
   .theme-swatch:hover { @apply border-muted; }

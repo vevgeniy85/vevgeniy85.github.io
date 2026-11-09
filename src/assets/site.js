@@ -1,4 +1,21 @@
 import { sendMessage } from './contact-adapter.js';
+const themeTrigger = document.querySelector('.theme-trigger');
+const themePicker = document.querySelector('#theme-picker');
+function positionThemePicker() {
+  if (!themePicker?.matches(':popover-open')) return;
+  const trigger = themeTrigger.getBoundingClientRect();
+  const left = Math.max(16, Math.min(trigger.right - themePicker.offsetWidth, window.innerWidth - themePicker.offsetWidth - 16));
+  themePicker.style.left = `${left}px`;
+  themePicker.style.top = `${trigger.bottom + 12}px`;
+}
+themePicker?.addEventListener('beforetoggle', event => {
+  if (event.newState === 'open') requestAnimationFrame(positionThemePicker);
+});
+window.addEventListener('resize', () => {
+  if (window.innerWidth < 1280 && themePicker?.matches(':popover-open')) themePicker.hidePopover();
+  else positionThemePicker();
+});
+window.addEventListener('scroll', positionThemePicker, { passive: true });
 const toggle = document.querySelector('#menu-toggle');
 const menu = document.querySelector('#mobile-menu');
 let closingTimer;

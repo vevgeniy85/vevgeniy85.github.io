@@ -93,6 +93,17 @@ test('color picker applies all presets and remembers the selection across pages 
   await page.setViewportSize({width:1440,height:900});
   await page.goto('/');
   await page.locator('[popovertarget="theme-picker"]').click();
+  await expect.poll(async () => {
+    const trigger = await page.locator('.theme-trigger').boundingBox();
+    const picker = await page.locator('#theme-picker').boundingBox();
+    return picker ? Math.abs(picker.y - trigger.y - trigger.height - 12) : Infinity;
+  }).toBeLessThan(2);
+  const trigger = await page.locator('.theme-trigger').boundingBox();
+  const picker = await page.locator('#theme-picker').boundingBox();
+  expect(Math.abs(picker.x + picker.width - trigger.x - trigger.width)).toBeLessThan(2);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#theme-picker')).toBeHidden();
+  await page.locator('.theme-trigger').click();
   for (const color of ['blue','green','yellow','red','purple']) {
     await page.locator(`#theme-picker [data-accent-choice="${color}"]`).click();
     await expect(page.locator('html')).toHaveAttribute('data-ui-accent',color);

@@ -4,10 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prebuild": "node scripts/clean-previews.mjs",
     "prebuild:css": "node scripts/vendor-assets.mjs",
     "build:css": "tailwindcss -i src/styles.css -o src/assets/site.css --minify",
     "build": "npm run build:css && eleventy",
-    "predev": "node scripts/vendor-assets.mjs",
+    "predev": "node scripts/clean-previews.mjs && node scripts/vendor-assets.mjs",
     "dev": "concurrently -k \"tailwindcss -i src/styles.css -o src/assets/site.css --watch\" \"eleventy --serve\"",
     "check": "node scripts/check.mjs && node scripts/check-seo.mjs",
     "test": "playwright test"

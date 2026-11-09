@@ -1,99 +1,65 @@
 const toggle = document.querySelector('[data-menu-toggle]');
 const menu = document.querySelector('#mobile-menu');
 const panel = menu?.querySelector('.mobile-drawer-panel');
-let closeTimer;
-let openFrame;
+let menuAnimation;
 let oldOverflow = '';
-let pendingNavigation;
-const rootPage = menu?.querySelector('[data-menu-root]');
-const productsPage = menu?.querySelector('[data-menu-products]');
-const submenuButton = menu?.querySelector('[data-submenu-open]');
-function setSubmenu(open, focus = true) {
-  if (!rootPage || !productsPage) return;
-  menu.classList.toggle('submenu-open', open);
-  submenuButton.setAttribute('aria-expanded', String(open));
-  rootPage.inert = open;
-  productsPage.inert = !open;
-  if (focus) (open ? productsPage.querySelector('[data-submenu-back]') : submenuButton).focus({preventScroll:true});
-}
-submenuButton?.addEventListener('click', () => setSubmenu(true));
-menu?.querySelector('[data-submenu-back]')?.addEventListener('click', () => setSubmenu(false));
-function finishClose() {
-  clearTimeout(closeTimer);
-  if (!menu?.open) return;
+let closing = false;
+const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+function finishClose(destination) {
+  menuAnimation?.cancel();
+  menuAnimation = null;
   menu.close();
-  setSubmenu(false, false);
+  closing = false;
   document.body.style.overflow = oldOverflow;
-  if (matchMedia('(max-width: 767px)').matches) toggle?.focus();
-  if (pendingNavigation) {
-    const destination = pendingNavigation;
-    pendingNavigation = undefined;
-    window.location.assign(destination);
-  }
+  if (destination) location.assign(destination);
+  else if (matchMedia('(max-width: 767px)').matches) toggle?.focus();
 }
-function closeMenu(immediate = false) {
-  if (!toggle || !menu?.open) return;
-  cancelAnimationFrame(openFrame);
+function closeMenu(immediate = false, destination) {
+  if (!toggle || !menu?.open || closing) return;
+  closing = true;
+  const start = getComputedStyle(panel).transform;
+  menuAnimation?.cancel();
   toggle.setAttribute('aria-expanded', 'false');
   toggle.setAttribute('aria-label', 'Open navigation');
   menu.classList.remove('is-open');
-  clearTimeout(closeTimer);
-  if (immediate || matchMedia('(prefers-reduced-motion: reduce)').matches) finishClose();
-  else closeTimer = setTimeout(finishClose, 350);
+  if (immediate || reducedMotion()) { finishClose(destination); return; }
+  menuAnimation = panel.animate([{transform:start}, {transform:'translateX(100%)'}], {
+    duration:320, easing:'cubic-bezier(0.4, 0, 0.2, 1)', fill:'forwards'
+  });
+  menuAnimation.onfinish = () => finishClose(destination);
 }
 toggle?.addEventListener('click', () => {
-  if (!menu) return;
+  if (!menu || closing) return;
   if (menu.open) { closeMenu(); return; }
-  clearTimeout(closeTimer);
   oldOverflow = document.body.style.overflow;
   document.body.style.overflow = 'hidden';
-  menu.classList.remove('is-open');
+  // Focus the close button before moving the panel offscreen, so the browser
+  // cannot scroll the dialog horizontally to reveal the focused control.
+  menu.classList.add('is-open');
   menu.showModal();
   toggle.setAttribute('aria-expanded', 'true');
   toggle.setAttribute('aria-label', 'Close navigation');
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    menu.classList.add('is-open');
-  } else {
-    // Opening a dialog changes display:none. Give the offscreen state a painted
-    // frame before changing its transform, including on mobile Safari.
-    openFrame = requestAnimationFrame(() => {
-      openFrame = requestAnimationFrame(() => {
-        if (menu.open && toggle.getAttribute('aria-expanded') === 'true') {
-          menu.classList.add('is-open');
-        }
-      });
+  if (!reducedMotion()) {
+    menuAnimation = panel.animate([{transform:'translateX(100%)'}, {transform:'translateX(0)'}], {
+      duration:320, easing:'cubic-bezier(0.4, 0, 0.2, 1)'
     });
   }
 });
 menu?.querySelector('[data-menu-close]')?.addEventListener('click', () => closeMenu());
-menu?.addEventListener('click', event => { if (event.target === menu) closeMenu(); });
-menu?.addEventListener('cancel', event => { event.preventDefault(); closeMenu(); });
 menu?.addEventListener('click', event => {
+  if (event.target === menu) { closeMenu(); return; }
   const link = event.target.closest('a[href]');
-  if (!link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || link.target || link.hasAttribute('download')) return;
+  if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.target || link.hasAttribute('download')) return;
+  if (!['http:', 'https:'].includes(new URL(link.href).protocol)) return;
   event.preventDefault();
-  pendingNavigation = link.href;
-  closeMenu();
+  closeMenu(false, link.href);
 });
-panel?.addEventListener('transitionend', event => {
-  if (event.target === panel && event.propertyName === 'transform' && !menu.classList.contains('is-open')) finishClose();
-});
-matchMedia('(min-width: 768px)').addEventListener('change', event => { if (event.matches) closeMenu(true); });
-const search = document.querySelector('input[data-search]');
-const productDropdowns = [...document.querySelectorAll('[data-product-dropdown]')];
-productDropdowns.forEach(dropdown => {
-  dropdown.addEventListener('click', event => {
-    if (event.target.closest('a')) dropdown.open = false;
-  });
-});
-document.addEventListener('click', event => {
-  productDropdowns.forEach(dropdown => { if (!dropdown.contains(event.target)) dropdown.open = false; });
-});
-document.addEventListener('keydown', event => {
-  if (event.key !== 'Escape') return;
-  productDropdowns.forEach(dropdown => {
-    if (dropdown.open) { dropdown.open = false; if (!menu?.open) dropdown.querySelector('summary').focus(); }
-  });
+menu?.addEventListener('cancel', event => { event.preventDefault(); closeMenu(); });
+matchMedia('(min-width: 768px)').addEventListener('change', event => {
+  if (event.matches && menu?.open) {
+    if (closing) finishClose();
+    else closeMenu(true);
+  }
 });
 // Fallback for browsers without native exclusive <details name> support.
 document.querySelectorAll('[data-faq]').forEach(group => {
@@ -105,65 +71,78 @@ document.querySelectorAll('[data-faq]').forEach(group => {
     });
   }, true);
 });
-const filters = [...document.querySelectorAll('[data-filter]')];
-let category = 'all';
-function applyFilters() {
-  const query = search?.value.toLowerCase().trim() || '';
-  let visible = 0;
-  document.querySelectorAll('[data-card]').forEach(card => {
-    const match = (category === 'all' || card.dataset.category === category) && card.dataset.search.includes(query);
-    card.hidden = !match;
-    const listItem = card.closest('li');
-    if (listItem) listItem.hidden = !match;
-    if (match) visible++;
-  });
-  const status = document.querySelector('[data-results]');
-  if (status) status.textContent = `${visible} ${visible === 1 ? 'item' : 'items'} found`;
-  const empty = document.querySelector('[data-empty]');
-  if (empty) empty.hidden = visible > 0;
-}
-filters.forEach(button => button.addEventListener('click', () => {
-  category = button.dataset.filter;
-  filters.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
-  applyFilters();
-}));
-search?.addEventListener('input', applyFilters);
-
-// Reveal only after intersection; content remains available without JavaScript.
-if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.remove('reveal-pending');
-        observer.unobserve(entry.target);
-      }
+// Match anchor positioning to the actual height of both sticky navigation bars.
+const categoryNav = document.querySelector('[data-category-nav]');
+if (categoryNav) {
+  const header = document.querySelector('header');
+  const updateCatalogOffset = () => {
+    const headerHeight = header.getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
+    document.documentElement.style.setProperty('--catalog-offset', `${headerHeight + categoryNav.getBoundingClientRect().height}px`);
+  };
+  updateCatalogOffset();
+  const observer = new ResizeObserver(updateCatalogOffset);
+  observer.observe(header);
+  observer.observe(categoryNav);
+  // A fragment can be positioned before the local display font has loaded.
+  // Align it again once fonts and the initial page layout are ready.
+  Promise.all([
+    document.fonts.ready,
+    new Promise(resolve => {
+      if (document.readyState === 'complete') resolve();
+      else window.addEventListener('load', resolve, {once:true});
+    })
+  ]).then(() => {
+    updateCatalogOffset();
+    requestAnimationFrame(() => {
+      const id = decodeURIComponent(location.hash.slice(1));
+      if (id.startsWith('list-')) document.getElementById(id)?.scrollIntoView({behavior:'instant', block:'start'});
     });
-  }, {rootMargin: '0px 0px 40px 0px', threshold: 0.01});
-  document.querySelectorAll('main > section:not([id^="list-"])').forEach((section, index) => {
-    if (index && section.getBoundingClientRect().top > innerHeight) {
-      section.classList.add('reveal-pending');
-      observer.observe(section);
+  });
+}
+
+// Keep the first screen immediate. Defer painting later sections while preserving
+// their measured height so sticky photos and category anchors keep their positions.
+document.fonts.ready.then(() => {
+if ('IntersectionObserver' in window && CSS.supports('content-visibility', 'auto')) {
+  const sections = [...document.querySelectorAll('main > section')];
+  const measurements = sections.map(section => {
+    const rect = section.getBoundingClientRect();
+    const style = getComputedStyle(section);
+    const contentHeight = rect.height - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom)
+      - parseFloat(style.borderTopWidth) - parseFloat(style.borderBottomWidth);
+    return {section, rect, contentHeight};
+  });
+  const reveal = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      const section = entry.target;
+      section.classList.remove('section-pending');
+      if (!reducedMotion()) section.animate([{opacity:0}, {opacity:1}], {duration:420, easing:'ease-out'});
+      reveal.unobserve(section);
+    }
+  }, {threshold:0});
+  for (const {section, rect, contentHeight} of measurements) {
+    if (rect.top < innerHeight || rect.height === 0) continue;
+    section.style.setProperty('--section-height', `${contentHeight}px`);
+    section.classList.add('section-deferred');
+    if (!reducedMotion()) {
+      section.classList.add('section-pending');
+      reveal.observe(section);
+    }
+  }
+  // Reveal keyboard destinations immediately instead of keeping focused links hidden.
+  document.querySelector('main')?.addEventListener('focusin', event => {
+    const section = event.target.closest('.section-pending');
+    if (section) {
+      section.classList.remove('section-pending');
+      reveal.unobserve(section);
     }
   });
 }
-
-const categoryNavigation = document.querySelector('[data-category-nav]');
-if (categoryNavigation) {
-  const updateOffsets = () => {
-    const headerHeight = document.querySelector('header').getBoundingClientRect().height;
-    const offset = headerHeight + categoryNavigation.getBoundingClientRect().height + 20;
-    document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
-    document.documentElement.style.setProperty('--catalog-offset', `${offset}px`);
-  };
-  new ResizeObserver(updateOffsets).observe(categoryNavigation);
-  updateOffsets();
-  window.addEventListener('load', () => {
-    const id = decodeURIComponent(location.hash.slice(1));
-    if (id.startsWith('list-')) document.getElementById(id)?.scrollIntoView();
-  }, {once:true});
-}
-document.querySelector('[data-reset]')?.addEventListener('click', () => {
-  category = 'all'; if (search) search.value = '';
-  filters.forEach(item => item.setAttribute('aria-pressed', String(item.dataset.filter === 'all')));
-  applyFilters(); search?.focus();
 });
+// Promote every image actually visible on the first screen, including list photos.
+for (const img of document.querySelectorAll('main img[loading="lazy"]')) {
+  const rect = img.getBoundingClientRect();
+  if (rect.top < innerHeight && rect.bottom > 0) img.loading = 'eager';
+}

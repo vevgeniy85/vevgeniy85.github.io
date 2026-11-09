@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 async function files(dir) { return (await Promise.all((await readdir(dir,{withFileTypes:true})).map(e=>e.isDirectory()?files(`${dir}/${e.name}`):`${dir}/${e.name}`))).flat(); }
 const pages=(await files('_site')).filter(f=>f.endsWith('.html') && !f.replaceAll('\\','/').includes('/previews/'));
 const titles=new Set(), descriptions=new Set();
+const canonicalUrls = new Set();
 for (const file of pages) {
   const html=await readFile(file,'utf8');
   if (file.endsWith('/404.html')) { assert.match(html,/name="robots" content="noindex, follow"/); assert.ok(!html.includes('rel="canonical"')); continue; }
@@ -12,6 +13,7 @@ for (const file of pages) {
   assert.ok(!descriptions.has(description),`Duplicate description: ${file}`); descriptions.add(description);
   assert.ok(description.length>=60&&description.length<=220,`Description length: ${file}`);
   const canonical=html.match(/rel="canonical" href="([^"]+)"/)[1];
+  canonicalUrls.add(canonical);
   assert.ok(canonical.startsWith('https://xt-solution.com/'));
   assert.equal((html.match(/rel="alternate" hreflang=/g)||[]).length,4);
   const json=html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)[1];
@@ -27,3 +29,13 @@ for (const file of pages) {
   if(breadcrumbs){assert.ok(breadcrumbs.itemListElement.length>=2);assert.equal(breadcrumbs.itemListElement.at(-1).item,canonical);}
 }
 console.log(`SEO verified: ${titles.size} unique titles/descriptions, canonical URLs, hreflang and JSON-LD graphs; 404 noindex.`);
+const sitemap = await readFile('_site/sitemap.xml', 'utf8');
+assert.match(sitemap, /<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">/);
+const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
+assert.equal(sitemapUrls.length, new Set(sitemapUrls).size, 'Sitemap must not contain duplicate URLs');
+assert.deepEqual(new Set(sitemapUrls), canonicalUrls, 'Sitemap must contain exactly the canonical indexable pages');
+const robots = await readFile('_site/robots.txt', 'utf8');
+const prefix = (process.env.SITE_PATH_PREFIX || '/').replace(/\/$/, '');
+assert.ok(robots.includes(`Sitemap: https://xt-solution.com${prefix}/sitemap.xml`), 'robots.txt must reference the sitemap');
+assert.match(robots, /User-agent: \*\nAllow: \/\n/);
+console.log(`Sitemap verified: ${sitemapUrls.length} canonical URLs; robots.txt references sitemap.xml.`);

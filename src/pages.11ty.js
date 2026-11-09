@@ -1,6 +1,6 @@
 import { languages, translations, projects } from './lib/content.js';
 import { escape, href, asset, icon, button, heading, cta, cards, process, technologies, layout } from './lib/ui.js';
-const routes = ['', 'about', 'portfolio', 'services', 'contacts', ...projects.map(p => 'portfolio/' + p.slug)];
+import { routes } from './lib/routes.js';
 export default class Pages {
   data() {
     return {

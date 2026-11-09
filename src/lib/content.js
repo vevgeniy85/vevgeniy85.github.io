@@ -155,7 +155,7 @@ export const projects = [
 },
 {
   "slug": "schastlyva-malecha",
-  "preview": "previews/schastlyva-malecha/",
+  "preview": "previews/kid-toys/",
   "tech": [
     "HTML",
     "Tailwind CSS",
@@ -164,7 +164,7 @@ export const projects = [
   "filters": [
     "landing"
   ],
-  "image": "schastlyva-malecha.webp",
+  "image": "kid-toys.webp",
   "name": {
     "en": "Children’s Toys — toy shop",
     "uk": "Дитячі іграшки — магазин іграшок",

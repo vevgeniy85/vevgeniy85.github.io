@@ -1,5 +1,20 @@
 import { test, expect } from '@playwright/test';
 import { projects } from '../src/lib/content.js';
+
+test('renamed toy preview preserves old links and indexed project URLs', async ({page}) => {
+  for (const suffix of ['', 'privacy.html']) {
+    await page.goto(`/previews/schastlyva-malecha/${suffix}?source=old#content`);
+    await expect(page).toHaveURL(`http://localhost:8080/previews/kid-toys/${suffix}?source=old#content`);
+    await expect(page.locator('h1')).toBeVisible();
+  }
+  for (const language of ['', 'uk/', 'ru/']) {
+    const route = `${language}portfolio/schastlyva-malecha/`;
+    await page.goto(`/${route}`);
+    await expect(page.locator('h1')).toBeVisible();
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://xt-solution.com/${route}`);
+    await expect(page.locator('a[href="/previews/kid-toys/"]')).toBeVisible();
+  }
+});
 test('all routes render without errors, missing images or horizontal overflow', async ({page}) => {
   const errors=[]; page.on('pageerror',e=>errors.push(e.message));
   page.on('response',r=>{if(r.status()>=400)errors.push(`${r.status()} ${r.url()}`);});
